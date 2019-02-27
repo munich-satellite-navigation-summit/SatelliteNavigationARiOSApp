@@ -72,13 +72,12 @@ namespace Controllers.ARScene
         {
             if (SquareState == FocusState.Stoped)
             {
-                Debug.Log("SquareState == FocusState.Stoped");
+                //Debug.Log("SquareState == FocusState.Stoped");
                 return;
             }
             //use center of screen for focusing
             var center = new Vector3(Screen.width / 2, Screen.height / 2, _findingSquareDist);
             //var screenPosition = Camera.main.ScreenToWorldPoint(center);
-
 
 
             if (HitTestWithResultType(TrackableType.FeaturePoint))
