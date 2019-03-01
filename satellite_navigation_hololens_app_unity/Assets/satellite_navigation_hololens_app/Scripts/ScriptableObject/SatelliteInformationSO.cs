@@ -11,4 +11,5 @@ public class SatelliteInformationSO : ScriptableObject
     public string range;
     public string speed;
     [Multiline]public string other;
+    [HideInInspector] public GameObject satellite;
 }

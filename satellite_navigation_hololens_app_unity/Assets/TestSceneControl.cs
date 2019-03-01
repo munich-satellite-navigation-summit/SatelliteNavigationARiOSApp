@@ -42,6 +42,7 @@ public class TestSceneControl : MonoBehaviour
         _earth.Enable();
         _earth.StartRotation();
         _panelInfo.Hide();
+        _panelInfo.Disable();
         for (int i = 0; i < _satellites.Count; i++)
         {
             _satellites[i].Enable();
@@ -56,7 +57,11 @@ public class TestSceneControl : MonoBehaviour
     {
         _earth.EndRotation();
         _earth.Disable();
+        _panelInfo.Enable();
+        _panelInfo.transform.parent = informationSO.satellite.transform;
+        _panelInfo.transform.localPosition = Vector3.zero;
         _panelInfo.Show(informationSO);
+
         for (int i = 0; i < _satellites.Count; i++)
         {
             _satellites[i].EndRotation();

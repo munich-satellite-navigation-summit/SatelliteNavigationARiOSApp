@@ -154,6 +154,10 @@ namespace Controllers.ARScene
             _rotateEarthControl.EndRotation();
             _rotateEarthControl.Disable();
             _buttonCanvasGroup.SetActive(true);
+            _informationControl.Enable();
+            _informationControl.transform.parent = info.satellite.transform;
+            _informationControl.transform.localPosition = Vector3.zero;
+            _informationControl.transform.eulerAngles = Vector3.zero;
             _informationControl.Show(info);
             for (int i = 0; i < _satellites.Count; i++)
             {
@@ -169,6 +173,7 @@ namespace Controllers.ARScene
         {
             //_earth.StartRotation();
             _informationControl.Hide();
+            _informationControl.Disable();
             for (int i = 0; i < _satellites.Count; i++)
             {
                 _satellites[i].MoveBack(RotateAllElements);

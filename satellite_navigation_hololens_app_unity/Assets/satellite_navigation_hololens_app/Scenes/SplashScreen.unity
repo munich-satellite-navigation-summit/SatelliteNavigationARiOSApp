@@ -393,7 +393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 2115079255}
-  _splashScreenTime: 1
+  _splashScreenTime: 0.5
   _speedAnimation: 0.5
 --- !u!1 &2115079250
 GameObject:

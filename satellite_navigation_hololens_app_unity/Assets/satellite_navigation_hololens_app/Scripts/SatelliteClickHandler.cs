@@ -10,11 +10,14 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
 {
 
     private Action _action;
+    private bool _isClicked;
 
     private void OnMouseUp()
     {
         Debug.Log("Click  " + name);
-        if(_action != null)
+        if (_isClicked) return;
+        _isClicked = true;
+        if (_action != null)
         {
             _action();
         }
@@ -27,5 +30,10 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
     public void AddListener(Action action)
     {
         _action = action;
+    }
+
+    public void CanClick()
+    {
+        _isClicked = false;
     }
 }
