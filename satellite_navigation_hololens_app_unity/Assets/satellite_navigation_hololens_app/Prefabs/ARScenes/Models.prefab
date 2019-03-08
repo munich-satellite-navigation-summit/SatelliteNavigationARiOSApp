@@ -637,6 +637,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1951748731482478553, guid: 9879f68913fc041bea496aab365f8dfa,
+        type: 3}
+      propertyPath: _pointRotateTransform
+      value: 
+      objectReference: {fileID: 1190050117142805690}
+    - target: {fileID: 1951748731482478553, guid: 9879f68913fc041bea496aab365f8dfa,
+        type: 3}
+      propertyPath: _clickHandler
+      value: 
+      objectReference: {fileID: 6212805184997032396}
     - target: {fileID: 8143193457888780258, guid: 9879f68913fc041bea496aab365f8dfa,
         type: 3}
       propertyPath: _pointRotateTransform
@@ -654,19 +664,24 @@ PrefabInstance:
       objectReference: {fileID: 5065309929687048323}
     - target: {fileID: 8143193457270288323, guid: 9879f68913fc041bea496aab365f8dfa,
         type: 3}
+      propertyPath: _rotateAxis.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143193457270288323, guid: 9879f68913fc041bea496aab365f8dfa,
+        type: 3}
+      propertyPath: _rotateAxis.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143193457270288323, guid: 9879f68913fc041bea496aab365f8dfa,
+        type: 3}
       propertyPath: _clickHandler
       value: 
       objectReference: {fileID: 5065309930627524098}
-    - target: {fileID: 1951748731482478553, guid: 9879f68913fc041bea496aab365f8dfa,
+    - target: {fileID: 8143193457270288323, guid: 9879f68913fc041bea496aab365f8dfa,
         type: 3}
-      propertyPath: _pointRotateTransform
-      value: 
-      objectReference: {fileID: 1190050117142805690}
-    - target: {fileID: 1951748731482478553, guid: 9879f68913fc041bea496aab365f8dfa,
-        type: 3}
-      propertyPath: _clickHandler
-      value: 
-      objectReference: {fileID: 6212805184997032396}
+      propertyPath: _selfSpeedRotation.x
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7125143328381293139, guid: 9879f68913fc041bea496aab365f8dfa,
         type: 3}
       propertyPath: _pointRotateTransform
