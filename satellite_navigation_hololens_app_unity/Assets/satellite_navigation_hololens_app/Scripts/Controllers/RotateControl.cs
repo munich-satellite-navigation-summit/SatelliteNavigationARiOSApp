@@ -28,7 +28,7 @@ namespace Controllers
         {
             Debug.Log("StartRotation " + name);
             _isRotate = true;
-            StartCoroutine(RotateEarth());
+            StartCoroutine(Rotate());
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Controllers
         /// <summary>
         /// Coroutine make rotation around axis
         /// </summary>
-        IEnumerator RotateEarth()
+        IEnumerator Rotate()
         {
             while (_isRotate)
             {

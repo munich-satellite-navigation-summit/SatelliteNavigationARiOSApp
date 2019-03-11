@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Controllers
@@ -11,17 +11,17 @@ namespace Controllers
     public class SatelliteControl : RotateControl
     {
         #region values
-        [SerializeField] private SatelliteClickHandler _clickHandler;
+        [SerializeField] private List<SatelliteClickHandler> _clickHandlers;
+        [SerializeField] private GameObject _orbit;
         [SerializeField] private float _satelliteMoveToCameraSpeed = 1f;
-        [SerializeField] private SatelliteInformationSO _informationSO;
-
         [SerializeField] private Vector3 _selfSpeedRotation = new Vector3(0f, 0.5f, 0f);
 
-        private Transform _satelliteTransform;
+        private SatelliteClickHandler _satelliteClickHandler;
         private Transform _pointPositionBeforeCamera;
 
         private Action<SatelliteInformationSO> _moveToCamAction;
         private Action _moveBackAction;
+        private SatelliteInformationSO _informationSO;
 
         private Vector3 _satellitePositionBeforeMoving;
         private Vector2 _mouse;
@@ -39,17 +39,38 @@ namespace Controllers
         #endregion
 
         /// <summary>
-        /// Sets action and point position for the satellite
+        /// Init the specified moveToCamAction and pointBeforeCamera.
         /// </summary>
-        /// <param name="moveToCamAction">Action - callback function when click on the satellite</param>
-        /// <param name="pointBeforeCamera">Position of point before camera where satellite has to move</param>
-        public void SetData(Action<SatelliteInformationSO> moveToCamAction, Transform pointBeforeCamera)
+        /// <param name="moveToCamAction">Move to cam action.</param>
+        /// <param name="pointBeforeCamera">Point before camera.</param>
+        public void Init(Action<SatelliteInformationSO> moveToCamAction, Transform pointBeforeCamera)
         {
+            EnableElements(false);
             _moveToCamAction = moveToCamAction;
             _pointPositionBeforeCamera = pointBeforeCamera;
-            _clickHandler.AddListener(MoveSatelliteToCamera);
-            _informationSO.satellite = _clickHandler.gameObject;
-            _satelliteTransform = _clickHandler.transform;
+            for (int i = 0; i < _clickHandlers.Count; i++)
+            {
+                _clickHandlers[i].AddListener(MoveSatelliteToCamera);
+            }
+        }
+
+
+        /// <summary>
+        /// Shows satelites and orbit, start rotate satellites
+        /// </summary>
+        public void ShowAndStartRotate()
+        {
+            EnableElements(true);
+            StartRotation();
+        }
+
+        /// <summary>
+        /// Hides satelites and orbit, stop rotate satellites
+        /// </summary>
+        public void HideAndStartRotate()
+        {
+            EnableElements(false);
+            EndRotation();
         }
 
         /// <summary>
@@ -67,7 +88,7 @@ namespace Controllers
         /// </summary>
         public override void Enable()
         {
-            _satelliteTransform.gameObject.SetActive(true);
+            _satelliteClickHandler.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -75,7 +96,7 @@ namespace Controllers
         /// </summary>
         public override void Disable()
         {
-            if (!_isClicked) _satelliteTransform.gameObject.SetActive(false);
+            if (!_isClicked) _satelliteClickHandler.gameObject.SetActive(false);
         }
 
         private void Awake()
@@ -90,12 +111,27 @@ namespace Controllers
         /// Callback function. when click on the satellite  it call this function and start move to the poin before the camera
         /// and call function what was setted in SetDataFunction
         /// </summary>
-        private void MoveSatelliteToCamera()
+        private void MoveSatelliteToCamera(SatelliteClickHandler satellite, SatelliteInformationSO informationSO)
         {
             _isClicked = true;
+            informationSO.satellite = satellite.gameObject;
             if (_moveToCamAction != null)
-                _moveToCamAction(_informationSO);
+                _moveToCamAction(informationSO);
+            _satelliteClickHandler = satellite;
             StartCoroutine(Move());
+        }
+
+        /// <summary>
+        /// Enables or disable the satellites and orbit.
+        /// </summary>
+        /// <param name="isEnable">If set to <c>true</c> is enable ssatelites and orbit else disable.</param>
+        private void EnableElements(bool isEnable)
+        {
+            for (int i = 0; i < _clickHandlers.Count; i++)
+            {
+                _clickHandlers[i].gameObject.SetActive(isEnable);
+            }
+            _orbit.SetActive(isEnable);
         }
 
         /// <summary>
@@ -103,19 +139,19 @@ namespace Controllers
         /// </summary>
         IEnumerator Move()
         {
-            _satellitePositionBeforeMoving = _satelliteTransform.position;
+            _satellitePositionBeforeMoving = _satelliteClickHandler.transform.position;
             Vector3 endPosition = _pointPositionBeforeCamera.position;
-            Vector3 rotation = _satelliteTransform.eulerAngles;
+            Vector3 rotation = _satelliteClickHandler.transform.eulerAngles;
             float timer = 0;
             while (timer < 1f)
             {
-                _satelliteTransform.position = Vector3.Lerp(_satellitePositionBeforeMoving, _pointPositionBeforeCamera.position, timer);
-                _satelliteTransform.eulerAngles = Vector3.Lerp(rotation, Vector3.zero, timer);
+                _satelliteClickHandler.transform.position = Vector3.Lerp(_satellitePositionBeforeMoving, _pointPositionBeforeCamera.position, timer);
+                _satelliteClickHandler.transform.eulerAngles = Vector3.Lerp(rotation, Vector3.zero, timer);
                 timer += Time.deltaTime * _satelliteMoveToCameraSpeed;
                 yield return null;
             }
-            _satelliteTransform.position = endPosition;
-            _satelliteTransform.eulerAngles = Vector3.zero;
+            _satelliteClickHandler.transform.position = endPosition;
+            _satelliteClickHandler.transform.eulerAngles = Vector3.zero;
             _isMovedToCam = true;
             _isSelfRotation = true;
             StartCoroutine(SelfRotation());
@@ -131,16 +167,16 @@ namespace Controllers
             if (!_isMovedToCam) yield break;
             _isCanRotate = false;
             float timer = 0;
-            Vector3 startPosition = _satelliteTransform.position;
+            Vector3 startPosition = _satelliteClickHandler.transform.position;
             while (timer < 1f)
             {
-                _satelliteTransform.position = Vector3.Lerp(startPosition, _satellitePositionBeforeMoving, timer);
+                _satelliteClickHandler.transform.position = Vector3.Lerp(startPosition, _satellitePositionBeforeMoving, timer);
                 timer += Time.deltaTime * _satelliteMoveToCameraSpeed;
                 yield return null;
             }
-            _satelliteTransform.position = _satellitePositionBeforeMoving;
+            _satelliteClickHandler.transform.position = _satellitePositionBeforeMoving;
             _isMovedToCam = false;
-            _clickHandler.CanClick();
+            _satelliteClickHandler.CanClick();
             if (_moveBackAction != null)
                 _moveBackAction();
             _isClicked = false;
@@ -158,11 +194,11 @@ namespace Controllers
             _isCourotineStart = true;
             while (_canRotate)
             {
-                _satelliteTransform.rotation = Quaternion.Lerp(_satelliteTransform.rotation, _pointPositionBeforeCamera.rotation,
+                _satelliteClickHandler.transform.rotation = Quaternion.Lerp(_satelliteClickHandler.transform.rotation, _pointPositionBeforeCamera.rotation,
                     Time.deltaTime * _rotateCoeficient * _delta);
-                if (Quaternion.Angle(_satelliteTransform.rotation, _pointPositionBeforeCamera.rotation) < 0.1f)
+                if (Quaternion.Angle(_satelliteClickHandler.transform.rotation, _pointPositionBeforeCamera.rotation) < 0.1f)
                 {
-                    _satelliteTransform.rotation = _pointPositionBeforeCamera.rotation;
+                    _satelliteClickHandler.transform.rotation = _pointPositionBeforeCamera.rotation;
                     _canRotate = false;
                 }
                 yield return null;
@@ -177,11 +213,11 @@ namespace Controllers
         /// </summary>
         IEnumerator SelfRotation()
         {
-            _pointPositionBeforeCamera.rotation = _satelliteTransform.rotation;
+            _pointPositionBeforeCamera.rotation = _satelliteClickHandler.transform.rotation;
             while (_isSelfRotation)
             {
-                _satelliteTransform.Rotate(_selfSpeedRotation);
-                _pointPositionBeforeCamera.rotation = _satelliteTransform.rotation;
+                _satelliteClickHandler.transform.Rotate(_selfSpeedRotation);
+                _pointPositionBeforeCamera.rotation = _satelliteClickHandler.transform.rotation;
                 yield return null;
             }
         }
@@ -198,7 +234,7 @@ namespace Controllers
                     if (Input.GetTouch(0).phase == TouchPhase.Began)
                     {
                         _mouse = Input.mousePosition;
-                        _pointPositionBeforeCamera.rotation = _satelliteTransform.rotation;
+                        _pointPositionBeforeCamera.rotation = _satelliteClickHandler.transform.rotation;
                         _canRotate = false;
                     }
 

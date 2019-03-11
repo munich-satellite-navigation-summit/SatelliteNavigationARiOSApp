@@ -1,9 +1,11 @@
 ﻿
 using System;
+using UnityEngine;
 
-namespace Interfaces {
-public interface IClickHandler 
+namespace Interfaces
 {
-    void AddListener(Action action);
-}
+    public interface IClickHandler
+    {
+        void AddListener(Action<SatelliteClickHandler, SatelliteInformationSO> action);
+    }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Helpers;
 using Interfaces;
 using UnityEngine;
@@ -9,9 +7,14 @@ using UnityEngine;
 public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
 {
 
-    private Action _action;
+    [SerializeField] private SatelliteInformationSO _informationSO;
+
+    private Action<SatelliteClickHandler, SatelliteInformationSO> _action;
     private bool _isClicked;
 
+    /// <summary>
+    /// Ons the mouse up.
+    /// </summary>
     private void OnMouseUp()
     {
         Debug.Log("Click  " + name);
@@ -19,7 +22,7 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
         _isClicked = true;
         if (_action != null)
         {
-            _action();
+            _action(this, _informationSO);
         }
     }
 
@@ -27,11 +30,14 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
     /// Adds the listener to the click on satellite
     /// </summary>
     /// <param name="action">Action - funclion what have to be when click  on the satellite</param>
-    public void AddListener(Action action)
+    public void AddListener(Action<SatelliteClickHandler, SatelliteInformationSO> action)
     {
         _action = action;
     }
 
+    /// <summary>
+    /// Set boolean to false for start click again.
+    /// </summary>
     public void CanClick()
     {
         _isClicked = false;

@@ -1,26 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Controllers;
+using Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TestSceneControl : MonoBehaviour
 {
-    [SerializeField] private RotateEarthControl _earth;
-    [SerializeField] private List<SatelliteControl> _satellites;
+    [SerializeField] private RotateEarthControl _rotateEarthControl;
+    [SerializeField] private List<SatelliteControl> _galileoSatellites;
+    [SerializeField] private List<SatelliteControl> _gpsSatellites;
+    [SerializeField] private List<SatelliteControl> _glonassSatellites;
+    [SerializeField] private List<SatelliteControl> _beidouSatellites;
+
     [SerializeField] private Transform _pointBeforeCameraTransform;
     [SerializeField] private Button _backButton;
-    [SerializeField] private InformationControl _panelInfo;
+    [SerializeField] private InformationControl _informationControl;
+
+    [SerializeField] private float _pauseTimeBeforeShowAllSatellites = 2f;
+
+    private CanvasGroup _buttonCanvasGroup;
+
     //[SerializeField] private SatelliteControl _sateliteGPS;
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < _satellites.Count; i++)
-        {
-            _satellites[i].SetData(StopRotations, _pointBeforeCameraTransform);
-        }
-        RotateAllElements();
+        _buttonCanvasGroup = _backButton.GetComponent<CanvasGroup>();
+
+        InitSatellites(_galileoSatellites);
+        InitSatellites(_gpsSatellites);
+        InitSatellites(_glonassSatellites);
+        InitSatellites(_beidouSatellites);
+        StartCoroutine(ShowAfterPlace());
     }
 
 
@@ -35,38 +47,71 @@ public class TestSceneControl : MonoBehaviour
     }
 
     /// <summary>
-    /// Start rotate all elements.
+    /// Initialize the satellites.
     /// </summary>
-    private void RotateAllElements()
+    /// <param name="satellites">Satellites.</param>
+    private void InitSatellites(List<SatelliteControl> satellites)
     {
-        _earth.Enable();
-        _earth.StartRotation();
-        _panelInfo.Hide();
-        _panelInfo.Disable();
-        for (int i = 0; i < _satellites.Count; i++)
+        for (int i = 0; i < satellites.Count; i++)
         {
-            _satellites[i].Enable();
-            _satellites[i].StartRotation();
+            satellites[i].Init(StopRotations, _pointBeforeCameraTransform);
         }
     }
 
     /// <summary>
-    /// Stops to rotate the earth.
+    /// Start rotate all elements.
     /// </summary>
-    private void StopRotations(SatelliteInformationSO informationSO)
+    private void RotateAllElements()
     {
-        _earth.EndRotation();
-        _earth.Disable();
-        _panelInfo.Enable();
-        _panelInfo.transform.parent = informationSO.satellite.transform;
-        _panelInfo.transform.localPosition = Vector3.zero;
-        _panelInfo.Show(informationSO);
+        _buttonCanvasGroup.SetActive(false);
+        _rotateEarthControl.Enable();
+        _rotateEarthControl.StartRotation();
 
-        for (int i = 0; i < _satellites.Count; i++)
+        ShowAndRotate(_galileoSatellites, true);
+        ShowAndRotate(_gpsSatellites, true);
+        ShowAndRotate(_glonassSatellites, true);
+        ShowAndRotate(_beidouSatellites, true);
+    }
+
+    /// <summary>
+    /// Shows the satellites and rotate.
+    /// </summary>
+    /// <param name="isShow">If set to <c>true</c> is show and rotate satellites else it hide and stop rotation</param>
+    private void ShowAndRotate(List<SatelliteControl> satellites, bool isShow)
+    {
+        for (int i = 0; i < satellites.Count; i++)
         {
-            _satellites[i].EndRotation();
-            _satellites[i].Disable();
+            if (isShow)
+            {
+                satellites[i].ShowAndStartRotate();
+            }
+            else
+            {
+                satellites[i].HideAndStartRotate();
+            }
+
         }
+    }
+
+    /// <summary>
+    /// Stops the rotations.
+    /// </summary>
+    /// <param name="info">Info about satellite.</param>
+    private void StopRotations(SatelliteInformationSO info)
+    {
+        _rotateEarthControl.EndRotation();
+        _rotateEarthControl.Disable();
+        _buttonCanvasGroup.SetActive(true);
+        _informationControl.Enable();
+        _informationControl.transform.parent = info.satellite.transform;
+        _informationControl.transform.localPosition = Vector3.zero;
+        _informationControl.transform.eulerAngles = Vector3.zero;
+        _informationControl.Show(info);
+
+        ShowAndRotate(_galileoSatellites, false);
+        ShowAndRotate(_gpsSatellites, false);
+        ShowAndRotate(_glonassSatellites, false);
+        ShowAndRotate(_beidouSatellites, false);
     }
 
     /// <summary>
@@ -75,10 +120,37 @@ public class TestSceneControl : MonoBehaviour
     private void ContinueMoving()
     {
         //_earth.StartRotation();
-        for (int i = 0; i < _satellites.Count; i++)
-        {
-            _satellites[i].MoveBack(RotateAllElements);
-        }
- 
+        _informationControl.Hide();
+        _informationControl.Disable();
+        MoveBack(_galileoSatellites);
+        MoveBack(_gpsSatellites);
+        MoveBack(_glonassSatellites);
+        MoveBack(_beidouSatellites);
     }
+
+    /// <summary>
+    /// Moves the back satellites
+    /// </summary>
+    /// <param name="satellites">Satellites.</param>
+    private void MoveBack(List<SatelliteControl> satellites)
+    {
+        for (int i = 0; i < satellites.Count; i++)
+        {
+            satellites[i].MoveBack(RotateAllElements);
+        }
+    }
+
+    /// <summary>
+    /// Shows the after place earth in AR world
+    /// </summary>
+    private IEnumerator ShowAfterPlace()
+    {
+        ShowAndRotate(_galileoSatellites, true);
+        yield return new WaitForSeconds(_pauseTimeBeforeShowAllSatellites);
+        ShowAndRotate(_gpsSatellites, true);
+        ShowAndRotate(_glonassSatellites, true);
+        ShowAndRotate(_beidouSatellites, true);
+    }
+
+
 }
