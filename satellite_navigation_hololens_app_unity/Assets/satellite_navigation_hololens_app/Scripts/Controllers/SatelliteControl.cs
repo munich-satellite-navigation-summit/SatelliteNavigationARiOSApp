@@ -31,7 +31,6 @@ namespace Controllers
         private float _delta;
 
         private bool _isMovedToCam;
-        private bool _isClicked;
         private bool _canRotate;
         private bool _isCourotineStart;
         private bool _isSelfRotation;
@@ -62,15 +61,19 @@ namespace Controllers
         {
             EnableElements(true);
             StartRotation();
+            for (int i = 0; i < _clickHandlers.Count; i++)
+                _clickHandlers[i].Enable();
         }
 
         /// <summary>
         /// Hides satelites and orbit, stop rotate satellites
         /// </summary>
-        public void HideAndStartRotate()
+        public void HideAndStopRotate()
         {
             EnableElements(false);
             EndRotation();
+            for (int i = 0; i < _clickHandlers.Count; i++)
+                _clickHandlers[i].Disable();
         }
 
         /// <summary>
@@ -84,19 +87,12 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Enable satellite.
+        /// Shows the hide orbits.
         /// </summary>
-        public override void Enable()
+        /// <param name="isShow">If set to <c>true</c> is show.</param>
+        public void ShowHideOrbits(bool isShow)
         {
-            _satelliteClickHandler.gameObject.SetActive(true);
-        }
-
-        /// <summary>
-        /// Disable satellite if it was not clicked.
-        /// </summary>
-        public override void Disable()
-        {
-            if (!_isClicked) _satelliteClickHandler.gameObject.SetActive(false);
+            _orbit.SetActive(isShow);
         }
 
         private void Awake()
@@ -113,8 +109,8 @@ namespace Controllers
         /// </summary>
         private void MoveSatelliteToCamera(SatelliteClickHandler satellite, SatelliteInformationSO informationSO)
         {
-            _isClicked = true;
             informationSO.satellite = satellite.gameObject;
+            Debug.Log(satellite.name);
             if (_moveToCamAction != null)
                 _moveToCamAction(informationSO);
             _satelliteClickHandler = satellite;
@@ -129,7 +125,10 @@ namespace Controllers
         {
             for (int i = 0; i < _clickHandlers.Count; i++)
             {
-                _clickHandlers[i].gameObject.SetActive(isEnable);
+                if (isEnable)
+                    _clickHandlers[i].Enable();
+                else
+                    _clickHandlers[i].Disable();
             }
             _orbit.SetActive(isEnable);
         }
@@ -140,6 +139,7 @@ namespace Controllers
         IEnumerator Move()
         {
             _satellitePositionBeforeMoving = _satelliteClickHandler.transform.position;
+            Debug.Log("MOVE " + _satelliteClickHandler.IsEnabled);
             Vector3 endPosition = _pointPositionBeforeCamera.position;
             Vector3 rotation = _satelliteClickHandler.transform.eulerAngles;
             float timer = 0;
@@ -179,7 +179,6 @@ namespace Controllers
             _satelliteClickHandler.CanClick();
             if (_moveBackAction != null)
                 _moveBackAction();
-            _isClicked = false;
             _isSelfRotation = false;
         }
         #endregion

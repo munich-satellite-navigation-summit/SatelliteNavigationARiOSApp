@@ -17,7 +17,7 @@ namespace Controllers.ARScene
             Stoped
         }
 
-        [SerializeField] private GameObject _findingSquare;
+        //[SerializeField] private GameObject _findingSquare;
 
         //[SerializeField] private LayerMask _collisionLayerMask;
         [SerializeField] private float _findingSquareDist = 0.5f;
@@ -41,7 +41,7 @@ namespace Controllers.ARScene
                 {
                     ChangedFocusState(_squareState);
                 }
-                _findingSquare.SetActive(_squareState != FocusState.Found && _squareState != FocusState.Stoped);
+                //_findingSquare.SetActive(_squareState != FocusState.Found && _squareState != FocusState.Stoped);
             }
         }
         private FocusState _squareState;
@@ -95,28 +95,28 @@ namespace Controllers.ARScene
             {
                 SquareState = FocusState.Finding;
 
-                //check camera forward is facing downward
-                if (Vector3.Dot(_camera.transform.forward, Vector3.down) > 0)
-                {
-                    //position the focus finding square a distance from camera and facing up
-                    _findingSquare.transform.position = _camera.ScreenToWorldPoint(center);
+                ////check camera forward is facing downward
+                //if (Vector3.Dot(_camera.transform.forward, Vector3.down) > 0)
+                //{
+                //    //position the focus finding square a distance from camera and facing up
+                //    //_findingSquare.transform.position = _camera.ScreenToWorldPoint(center);
 
-                    //vector from camera to focussquare
-                    var vecToCamera = _findingSquare.transform.position - _camera.transform.position;
+                //    //vector from camera to focussquare
+                //    //var vecToCamera = _findingSquare.transform.position - _camera.transform.position;
 
-                    //find vector that is orthogonal to camera vector and up vector
-                    var vecOrthogonal = Vector3.Cross(vecToCamera, Vector3.up);
+                //    //find vector that is orthogonal to camera vector and up vector
+                //    //var vecOrthogonal = Vector3.Cross(vecToCamera, Vector3.up);
 
-                    //find vector orthogonal to both above and up vector to find the forward vector in basis function
-                    var vecForward = Vector3.Cross(vecOrthogonal, Vector3.up);
+                //    //find vector orthogonal to both above and up vector to find the forward vector in basis function
+                //    //var vecForward = Vector3.Cross(vecOrthogonal, Vector3.up);
 
-                    _findingSquare.transform.rotation = Quaternion.LookRotation(vecForward, Vector3.up);
-                }
-                else
-                {
-                    //we will not display finding square if camera is not facing below horizon
-                    _findingSquare.SetActive(false);
-                }
+                //    //_findingSquare.transform.rotation = Quaternion.LookRotation(vecForward, Vector3.up);
+                //}
+                //else
+                //{
+                //    //we will not display finding square if camera is not facing below horizon
+                //    //_findingSquare.SetActive(false);
+                //}
             }
 
         }

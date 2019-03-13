@@ -26,7 +26,6 @@ namespace Controllers
         /// </summary>    
         public void StartRotation()
         {
-            Debug.Log("StartRotation " + name);
             _isRotate = true;
             StartCoroutine(Rotate());
         }
@@ -36,7 +35,6 @@ namespace Controllers
         /// </summary>
         public void EndRotation()
         {
-            Debug.Log("EndRotation " + name);
             _isRotate = false;
         }
 

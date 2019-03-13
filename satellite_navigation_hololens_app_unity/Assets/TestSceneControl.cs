@@ -87,7 +87,7 @@ public class TestSceneControl : MonoBehaviour
             }
             else
             {
-                satellites[i].HideAndStartRotate();
+                satellites[i].HideAndStopRotate();
             }
 
         }

@@ -42,4 +42,15 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
     {
         _isClicked = false;
     }
+
+    public override void Enable()
+    {
+        base.Enable();
+    }
+
+    public override void Disable()
+    {
+        if(!_isClicked)
+            base.Disable();
+    }
 }

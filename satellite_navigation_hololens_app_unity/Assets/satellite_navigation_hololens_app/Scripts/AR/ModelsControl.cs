@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Buttons;
 using Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,27 +15,50 @@ namespace Controllers.ARScene
         [SerializeField] private List<ModelView> _modelList;
         [SerializeField] private RotateEarthControl _rotateEarthControl;
         //[SerializeField] private List<SatelliteControl> _satellites;
+
+
+        [SerializeField] private Transform _pointBeforeCameraTransform;
+        [SerializeField] private Button _backButton;
+        [SerializeField] private InformationControl _informationControl;
+
+        [Header("Lists of satellites")]
         [SerializeField] private List<SatelliteControl> _galileoSatellites;
         [SerializeField] private List<SatelliteControl> _gpsSatellites;
         [SerializeField] private List<SatelliteControl> _glonassSatellites;
         [SerializeField] private List<SatelliteControl> _beidouSatellites;
         [SerializeField] private float _pauseTimeBeforeShowAllSatellites = 2f;
 
-        [SerializeField] private Transform _pointBeforeCameraTransform;
-        [SerializeField] private Button _backButton;
-        [SerializeField] private InformationControl _informationControl;
+        [Header("ZoomIn ZoomOut")]
+        [SerializeField] private ButtonHandler _zoomIn;
+        [SerializeField] private ButtonHandler _zoomOut;
+        [SerializeField] private Vector3 _zoomMax = new Vector3(2f, 2f, 2f);
+        [SerializeField] private Vector3 _zoomMin = new Vector3(0.5f, 0.5f, 0.5f);
+        [SerializeField] private float _zoomingSpeed = 0.5f;
+
+        [Header("Show orbits")]
+        [SerializeField] private Button _showHideOrbitsButton;
+        [SerializeField] private Text _showHideOrbitsText;
+        [SerializeField] private string _showText = "Show";
+        [SerializeField] private string _hideText = "Hide";
 
         private CanvasGroup _buttonCanvasGroup;
         private Dictionary<ModelView.ModelType, ModelView> _models;
+
+        private bool _isZooming;
+        private bool _isShowOrbits;
 
         public void Init()
         {
             _models = _modelList.ToDictionary(obj => obj.Type, obj => obj);
             _buttonCanvasGroup = _backButton.GetComponent<CanvasGroup>();
+            _buttonCanvasGroup.SetActive(false);
             InitSatellites(_galileoSatellites);
             InitSatellites(_gpsSatellites);
             InitSatellites(_glonassSatellites);
             InitSatellites(_beidouSatellites);
+            _showHideOrbitsButton.gameObject.SetActive(false);
+            _zoomIn.gameObject.SetActive(false);
+            _zoomOut.gameObject.SetActive(false);
             Hide();
         }
 
@@ -53,6 +77,9 @@ namespace Controllers.ARScene
                 }
                 else
                 {
+                    _showHideOrbitsButton.gameObject.SetActive(false);
+                    _zoomIn.gameObject.SetActive(false);
+                    _zoomOut.gameObject.SetActive(false);
                     Hide(ModelView.ModelType.Earth);
                 }
             }
@@ -128,11 +155,19 @@ namespace Controllers.ARScene
         #region Models Controll actions
         private void OnEnable()
         {
+            _zoomIn.AddListenerOnPointerDown(ZoomInBegin);
+            _zoomIn.AddListenerOnPointerUp(ZoomInEnd);
+            _zoomOut.AddListenerOnPointerDown(ZoomOutBegin);
+            _zoomOut.AddListenerOnPointerUp(ZoomOutEnd);
             _backButton.onClick.AddListener(ContinueMoving);
+            _showHideOrbitsButton.onClick.AddListener(ShowHideOrbits);
         }
 
         private void OnDisable()
         {
+            _showHideOrbitsButton.onClick.RemoveListener(ShowHideOrbits);
+            _zoomIn.RemoveAllListeners();
+            _zoomOut.RemoveAllListeners();
             _backButton.onClick.RemoveListener(ContinueMoving);
         }
 
@@ -161,6 +196,9 @@ namespace Controllers.ARScene
             ShowAndRotate(_gpsSatellites, true);
             ShowAndRotate(_glonassSatellites, true);
             ShowAndRotate(_beidouSatellites, true);
+            _showHideOrbitsButton.gameObject.SetActive(true);
+            _zoomIn.gameObject.SetActive(true);
+            _zoomOut.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -177,9 +215,8 @@ namespace Controllers.ARScene
                 }
                 else
                 {
-                    satellites[i].HideAndStartRotate();
+                    satellites[i].HideAndStopRotate();
                 }
-
             }
         }
 
@@ -197,7 +234,9 @@ namespace Controllers.ARScene
             _informationControl.transform.localPosition = Vector3.zero;
             _informationControl.transform.eulerAngles = Vector3.zero;
             _informationControl.Show(info);
-
+            _showHideOrbitsButton.gameObject.SetActive(false);
+            _zoomIn.gameObject.SetActive(false);
+            _zoomOut.gameObject.SetActive(false);
             ShowAndRotate(_galileoSatellites, false);
             ShowAndRotate(_gpsSatellites, false);
             ShowAndRotate(_glonassSatellites, false);
@@ -209,6 +248,7 @@ namespace Controllers.ARScene
         /// </summary>
         private void ContinueMoving()
         {
+            _buttonCanvasGroup.SetActive(false);
             //_earth.StartRotation();
             _informationControl.Hide();
             _informationControl.Disable();
@@ -228,6 +268,7 @@ namespace Controllers.ARScene
             {
                 satellites[i].MoveBack(RotateAllElements);
             }
+
         }
 
         /// <summary>
@@ -240,7 +281,95 @@ namespace Controllers.ARScene
             ShowAndRotate(_gpsSatellites, true);
             ShowAndRotate(_glonassSatellites, true);
             ShowAndRotate(_beidouSatellites, true);
+            _showHideOrbitsButton.gameObject.SetActive(true);
+            _zoomIn.gameObject.SetActive(true);
+            _zoomOut.gameObject.SetActive(true);
         }
+        #endregion
+
+        #region ZoomIn/Out
+
+        /// <summary>
+        /// Start zooming in.
+        /// </summary>
+        private void ZoomInBegin()
+        {
+            _isZooming = true;
+            StartCoroutine(Zooming(true));
+        }
+
+        /// <summary>
+        /// Stop zooming in.
+        /// </summary>
+        private void ZoomInEnd()
+        {
+            _isZooming = false;
+        }
+
+        /// <summary>
+        /// Start zooming out.
+        /// </summary>
+        private void ZoomOutBegin()
+        {
+            _isZooming = true;
+            StartCoroutine(Zooming(false));
+        }
+
+        /// <summary>
+        /// Stop zooming out.
+        /// </summary>
+        private void ZoomOutEnd()
+        {
+            _isZooming = false;
+        }
+
+        /// <summary>
+        /// Zooming the specified isZoomIn.
+        /// </summary>
+        /// <returns>The zooming.</returns>
+        /// <param name="isZoomIn">If set to <c>true</c> is zoom in else it zooming out.</param>
+        private IEnumerator Zooming(bool isZoomIn)
+        {
+            Vector3 startScale = _rotateEarthControl.transform.localScale;
+            Vector3 endScale = isZoomIn ? _zoomMax : _zoomMin;
+            float timer = 0;
+            while (_isZooming)
+            {
+                _rotateEarthControl.transform.localScale = Vector3.Lerp(startScale, endScale, timer);
+                timer += Time.deltaTime * _zoomingSpeed;
+                yield return null;
+            }
+        }
+        #endregion
+
+        #region Show/Hide Orbits
+
+        /// <summary>
+        /// Shows the hide orbits on button click.
+        /// </summary>
+        private void ShowHideOrbits()
+        {
+            ShowOrbits(_galileoSatellites, _isShowOrbits);
+            ShowOrbits(_gpsSatellites, _isShowOrbits);
+            ShowOrbits(_glonassSatellites, _isShowOrbits);
+            ShowOrbits(_beidouSatellites, _isShowOrbits);
+            _showHideOrbitsText.text = _isShowOrbits ? _showText : _hideText;
+            _isShowOrbits = !_isShowOrbits;
+        }
+
+        /// <summary>
+        /// Shows the orbites if it need. 
+        /// </summary>
+        /// <param name="satellites">Satellites.</param>
+        /// <param name="isShow">If set to <c>true</c> is show.</param>
+        private void ShowOrbits(List<SatelliteControl> satellites, bool isShow)
+        {
+            for (int i = 0; i < satellites.Count; i++)
+            {
+                satellites[i].ShowHideOrbits(isShow);
+            }
+        }
+
         #endregion
     }
 }
