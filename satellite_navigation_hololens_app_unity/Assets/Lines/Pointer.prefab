@@ -40,14 +40,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1626075571832308}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fab14c273ccf644493c840d4ecf5ab2, type: 3}
+  m_Script: {fileID: 11500000, guid: 58ce5a28061a04ed9a67165317a07653, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _destination: {fileID: 0}
   InitialVelocity: {x: 0.1, y: 0, z: 0}
   Acceleration: {x: -0, y: 0, z: -0}
-  PointCount: 5
-  PointSpacing: 0.47
-  GraphicThickness: -0.02
+  PointCount: 10
+  PointSpacing: 0.1
+  GraphicThickness: 0.02
   GraphicMaterial: {fileID: 2100000, guid: 21a645b07758b4b478bff4374fdb9a43, type: 2}
-  SelectionPadPrefab: {fileID: 0}
-  InvalidPadPrefab: {fileID: 0}

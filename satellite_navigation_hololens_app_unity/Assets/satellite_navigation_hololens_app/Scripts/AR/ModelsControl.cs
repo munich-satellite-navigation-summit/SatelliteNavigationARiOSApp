@@ -276,6 +276,10 @@ namespace Controllers.ARScene
         /// </summary>
         private IEnumerator ShowAfterPlace()
         {
+            _buttonCanvasGroup.SetActive(false);
+            _rotateEarthControl.Enable();
+            _rotateEarthControl.StartRotation();
+
             ShowAndRotate(_galileoSatellites, true);
             yield return new WaitForSeconds(_pauseTimeBeforeShowAllSatellites);
             ShowAndRotate(_gpsSatellites, true);
@@ -353,7 +357,7 @@ namespace Controllers.ARScene
             ShowOrbits(_gpsSatellites, _isShowOrbits);
             ShowOrbits(_glonassSatellites, _isShowOrbits);
             ShowOrbits(_beidouSatellites, _isShowOrbits);
-            _showHideOrbitsText.text = _isShowOrbits ? _showText : _hideText;
+            _showHideOrbitsText.text = _isShowOrbits ? _hideText : _showText;
             _isShowOrbits = !_isShowOrbits;
         }
 

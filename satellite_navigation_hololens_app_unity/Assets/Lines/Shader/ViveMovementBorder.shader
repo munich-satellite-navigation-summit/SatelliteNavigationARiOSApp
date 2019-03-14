@@ -11,7 +11,7 @@ Shader "Custom/Vive Movement Border"
 	}
 	SubShader
 	{
-		Tags{ "Queue" = "Overlay" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		Tags{ /*"Queue" = "Overlay" "IgnoreProjector" = "True" */"RenderType" = "Transparent" }
 
 		CGINCLUDE
 		#pragma vertex vert

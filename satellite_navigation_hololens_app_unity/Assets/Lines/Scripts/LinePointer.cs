@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using Helpers;
 
 [AddComponentMenu("Vive Teleporter/Parabolic Pointer")]
-public class ParabolicPointer : MonoBehaviourWrapper
+public class LinePointer : MonoBehaviourWrapper
 {
 
     [SerializeField] private Transform _destination;
@@ -22,6 +22,8 @@ public class ParabolicPointer : MonoBehaviourWrapper
     public float GraphicThickness = 0.2f;
     [Tooltip("Material to use to render the parabola mesh")]
     public Material GraphicMaterial;
+
+    private bool _isShowRay;
     //[Header("Selection Pad Properties")]
     //[SerializeField]
     //[Tooltip("Prefab to use as the selection pad when the player is pointing at a valid teleportable surface.")]
@@ -34,6 +36,7 @@ public class ParabolicPointer : MonoBehaviourWrapper
     {
         get { return _SampleRadius; }
     }
+
     [SerializeField]
     private static float _SampleRadius = 0.25f;
     [SerializeField]
@@ -90,7 +93,7 @@ public class ParabolicPointer : MonoBehaviourWrapper
     // gnd: height of the ground, in meters above y=0
     // outPts: List that will be populated by new points
     // normal: normal of hit point
-    private static bool CalculateParabolicCurve(Vector3 p0, Vector3 v0, Vector3 a, float dist, int points, List<Vector3> outPts, out Vector3 normal)
+    private static bool CalculateParabolicCurve(Vector3 p0, Vector3 v0, Vector3 a, float dist, int points, List<Vector3> outPts, out Vector3 normal, Vector3 dest)
     {
         outPts.Clear();
         outPts.Add(p0);
@@ -114,8 +117,11 @@ public class ParabolicPointer : MonoBehaviourWrapper
                 return endOnNavmesh;
             }
             else
+            {
                 outPts.Add(next);
-
+            }
+            if (Vector3.Distance(next, dest) < 0.15f)
+                break;
             last = next;
         }
 
@@ -166,6 +172,17 @@ public class ParabolicPointer : MonoBehaviourWrapper
     {
         Vector3 d = Vector3.Project(point, planeNormal.normalized);
         return point - d;
+    }
+
+
+    public void SetShowRay()
+    {
+        _isShowRay = true;
+    }
+
+    public void SetHideRay()
+    {
+        _isShowRay = false;
     }
 
     private void GenerateMesh(ref Mesh m, List<Vector3> points, Vector3 fwd, float uvoffset)
@@ -258,11 +275,12 @@ public class ParabolicPointer : MonoBehaviourWrapper
 
     void FixedUpdate()
     {
+        if (!_isShowRay) return;
         // 1. Calculate Parabola Points
         var heading = _destination.position - transform.position;
         var distance = heading.magnitude;
         var direction = heading / distance;
-        PointSpacing = distance;
+        //PointSpacing = distance;
 
         Vector3 velocity = direction;
         Vector3 velocity_normalized;
@@ -275,7 +293,7 @@ public class ParabolicPointer : MonoBehaviourWrapper
             velocity,
             Acceleration, PointSpacing, PointCount,
             ParabolaPoints,
-            out normal);
+            out normal, _destination.position);
 
         SelectedPoint = ParabolaPoints[ParabolaPoints.Count - 1];
 
@@ -349,7 +367,6 @@ public class ParabolicPointer : MonoBehaviourWrapper
 
         return angle;
     }
-
 #if UNITY_EDITOR
     private List<Vector3> ParabolaPoints_Gizmo;
 
@@ -363,21 +380,19 @@ public class ParabolicPointer : MonoBehaviourWrapper
         var heading = _destination.position - transform.position;
         var distance = heading.magnitude;
         var direction = heading / distance;
-        PointSpacing = Distance(_destination.position, transform.position);
-        if (PointSpacing > 1)
-        {
-            PointSpacing = Mathf.Sqrt(PointSpacing);
-            PointSpacing -= 1;// Mathf.Sqrt(PointSpacing);
-            //if (PointSpacing > 1)
-
-        }
+        //PointSpacing = Distance(_destination.position, transform.position);
+        //if (PointSpacing > 1)
+        //{
+        //    PointSpacing = Mathf.Sqrt(PointSpacing);
+        //    //PointSpacing -= 1;// Mathf.Sqrt(PointSpacing);
+        //    //if (PointSpacing > 1)
+        //        //PointSpacing = 0;
+        //}
         //else
-        PointSpacing *= PointSpacing;
-
+        //PointSpacing *= PointSpacing;
 
         //Debug.Log(PointSpacing);    0.5465016
         Vector3 velocity = direction; //transform.TransformDirection(_destination.position);
-        Debug.Log(velocity);
         Vector3 velocity_normalized;
         CurrentParabolaAngleY = ClampInitialVelocity(ref velocity, out velocity_normalized);
 
@@ -386,7 +401,7 @@ public class ParabolicPointer : MonoBehaviourWrapper
             transform.position,
             velocity,
             Acceleration, PointSpacing, PointCount,
-            ParabolaPoints_Gizmo, out normal);
+            ParabolaPoints_Gizmo, out normal, _destination.position);
 
         Gizmos.color = Color.blue;
         for (int x = 0; x < ParabolaPoints_Gizmo.Count - 1; x++)

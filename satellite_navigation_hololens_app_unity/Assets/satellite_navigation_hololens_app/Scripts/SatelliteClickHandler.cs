@@ -8,6 +8,7 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
 {
 
     [SerializeField] private SatelliteInformationSO _informationSO;
+    [SerializeField] private LinePointer _linePointer;
 
     private Action<SatelliteClickHandler, SatelliteInformationSO> _action;
     private bool _isClicked;
@@ -17,9 +18,9 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
     /// </summary>
     private void OnMouseUp()
     {
-        Debug.Log("Click  " + name);
         if (_isClicked) return;
         _isClicked = true;
+        _linePointer.SetHideRay();
         if (_action != null)
         {
             _action(this, _informationSO);
@@ -53,4 +54,22 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
         if(!_isClicked)
             base.Disable();
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "ShowRay")
+        {
+            _linePointer.SetShowRay();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "ShowRay")
+        {
+            _linePointer.SetHideRay();
+        }
+    }
+
+
 }
