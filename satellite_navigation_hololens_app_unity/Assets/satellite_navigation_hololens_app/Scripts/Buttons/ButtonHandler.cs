@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Helpers;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,8 +8,8 @@ namespace Buttons
 {
     public class ButtonHandler : MonoBehaviourWrapper, IPointerDownHandler, IPointerUpHandler
     {
-        private Action _onPointerDown;
-        private Action _onPointerUp;
+        private List<Action> _onPointerDown = new List<Action>();
+        private List<Action> _onPointerUp = new List<Action>();
 
         /// <summary>
         /// Adds the listener on pointer down.
@@ -16,7 +17,8 @@ namespace Buttons
         /// <param name="action">Action what have to work when press down button</param>
         public void AddListenerOnPointerDown(Action action)
         {
-            _onPointerDown = action;
+            Debug.Log("AddListenerOnPointerDown " + action + "  "  + _onPointerDown.Count);
+            _onPointerDown.Add(action);
         }
 
         /// <summary>
@@ -25,7 +27,8 @@ namespace Buttons
         /// <param name="action">Action what have to work when press up button</param>
         public void AddListenerOnPointerUp(Action action)
         {
-            _onPointerUp = action;
+            Debug.Log("AddListenerOnPointerUp " + action + "  " + _onPointerUp.Count);
+            _onPointerUp.Add(action);
         }
 
         /// <summary>
@@ -33,21 +36,23 @@ namespace Buttons
         /// </summary>
         public void RemoveAllListeners()
         {
-            _onPointerUp = null;
-            _onPointerDown = null;
+            _onPointerUp.Clear();
+            _onPointerDown.Clear();
         }
 
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (_onPointerDown != null)
-                _onPointerDown();
+            for (int i = 0; i < _onPointerDown.Count; i++)
+                if (_onPointerDown[i] != null)
+                    _onPointerDown[i].Invoke();
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (_onPointerUp != null)
-                _onPointerUp();
+            for (int i = 0; i < _onPointerUp.Count; i++)
+                if (_onPointerUp[i] != null)
+                    _onPointerUp[i].Invoke();
         }
 
 

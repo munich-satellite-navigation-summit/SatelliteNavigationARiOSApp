@@ -39,9 +39,9 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
     /// <summary>
     /// Set boolean to false for start click again.
     /// </summary>
-    public void CanClick()
+    public void DenyClick(bool isDeny = false)
     {
-        _isClicked = false;
+        _isClicked = isDeny;
     }
 
     public override void Enable()
@@ -57,6 +57,7 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("OnTriggerEnter");
         if (other.tag == "ShowRay")
         {
             _linePointer.SetShowRay();
@@ -65,6 +66,7 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
 
     private void OnTriggerExit(Collider other)
     {
+        Debug.Log("OnTriggerExit");
         if (other.tag == "ShowRay")
         {
             _linePointer.SetHideRay();

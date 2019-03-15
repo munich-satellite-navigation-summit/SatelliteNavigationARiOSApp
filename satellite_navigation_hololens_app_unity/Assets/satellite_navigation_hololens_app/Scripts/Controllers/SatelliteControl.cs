@@ -16,6 +16,9 @@ namespace Controllers
         [SerializeField] private float _satelliteMoveToCameraSpeed = 1f;
         [SerializeField] private Vector3 _selfSpeedRotation = new Vector3(0f, 0.5f, 0f);
 
+        [SerializeField] private float _zoomingCoefficient = 4f;
+        [SerializeField] private float _zoomingSpeed = 0.5f;
+
         private SatelliteClickHandler _satelliteClickHandler;
         private Transform _pointPositionBeforeCamera;
 
@@ -23,6 +26,8 @@ namespace Controllers
         private Action _moveBackAction;
         private SatelliteInformationSO _informationSO;
 
+        private Vector3 _zoomMax;
+        private Vector3 _zoomMin;
         private Vector3 _satellitePositionBeforeMoving;
         private Vector2 _mouse;
 
@@ -35,6 +40,9 @@ namespace Controllers
         private bool _isCourotineStart;
         private bool _isSelfRotation;
         private bool _isCanRotate;
+        private bool _isZooming;
+        private bool _canZoom;
+
         #endregion
 
         /// <summary>
@@ -95,6 +103,13 @@ namespace Controllers
             _orbit.SetActive(isShow);
         }
 
+
+        public void DennyClick(bool isDenny)
+        {
+            for (int i = 0; i < _clickHandlers.Count; i++)
+                _clickHandlers[i].DenyClick(isDenny);
+        }
+
         private void Awake()
         {
             //_target.rotation = _view.rotation;
@@ -114,6 +129,10 @@ namespace Controllers
             if (_moveToCamAction != null)
                 _moveToCamAction(informationSO);
             _satelliteClickHandler = satellite;
+
+            _zoomMax = _satelliteClickHandler.transform.localScale * _zoomingCoefficient;
+            _zoomMin = _satelliteClickHandler.transform.localScale / _zoomingCoefficient;
+
             StartCoroutine(Move());
         }
 
@@ -156,6 +175,7 @@ namespace Controllers
             _isSelfRotation = true;
             StartCoroutine(SelfRotation());
             _isCanRotate = true;
+            _canZoom = true;
             StartCoroutine(HandClickHandler());
         }
 
@@ -165,6 +185,7 @@ namespace Controllers
         IEnumerator Back()
         {
             if (!_isMovedToCam) yield break;
+            _canZoom = false;
             _isCanRotate = false;
             float timer = 0;
             Vector3 startPosition = _satelliteClickHandler.transform.position;
@@ -176,7 +197,7 @@ namespace Controllers
             }
             _satelliteClickHandler.transform.position = _satellitePositionBeforeMoving;
             _isMovedToCam = false;
-            _satelliteClickHandler.CanClick();
+            _satelliteClickHandler.DenyClick();
             if (_moveBackAction != null)
                 _moveBackAction();
             _isSelfRotation = false;
@@ -251,6 +272,64 @@ namespace Controllers
                         StartCoroutine(Rotate());
                     }
                 }
+                yield return null;
+            }
+        }
+        #endregion
+
+        #region ZoomIn/Out
+
+        /// <summary>
+        /// Start zooming in.
+        /// </summary>
+        public void ZoomInBegin()
+        {
+            if (!_canZoom) return;
+            _isZooming = true;
+            StartCoroutine(Zooming(true));
+        }
+
+        /// <summary>
+        /// Stop zooming in.
+        /// </summary>
+        public void ZoomInEnd()
+        {
+            _isZooming = false;
+        }
+
+        /// <summary>
+        /// Start zooming out.
+        /// </summary>
+        public void ZoomOutBegin()
+        {
+            if (!_canZoom) return;
+            _isZooming = true;
+            StartCoroutine(Zooming(false));
+        }
+
+        /// <summary>
+        /// Stop zooming out.
+        /// </summary>
+        public void ZoomOutEnd()
+        {
+            _isZooming = false;
+        }
+
+        /// <summary>
+        /// Zooming the specified isZoomIn.
+        /// </summary>
+        /// <returns>The zooming.</returns>
+        /// <param name="isZoomIn">If set to <c>true</c> is zoom in else it zooming out.</param>
+        private IEnumerator Zooming(bool isZoomIn)
+        {
+            Vector3 startScale = _satelliteClickHandler.transform.localScale;
+            Vector3 endScale = isZoomIn ? _zoomMax : _zoomMin;
+            float timer = 0;
+            while (_isZooming)
+            {
+                Debug.Log("_satelliteClickHandler   " + _satelliteClickHandler.name + "  localScale " + _satelliteClickHandler.transform.localScale);
+                _satelliteClickHandler.transform.localScale = Vector3.MoveTowards(startScale, endScale, timer);
+                timer += Time.deltaTime * _zoomingSpeed;
                 yield return null;
             }
         }

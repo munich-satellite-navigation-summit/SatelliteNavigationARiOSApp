@@ -14,7 +14,6 @@ namespace Controllers.ARScene
     {
         [SerializeField] private List<ModelView> _modelList;
         [SerializeField] private RotateEarthControl _rotateEarthControl;
-        //[SerializeField] private List<SatelliteControl> _satellites;
 
 
         [SerializeField] private Transform _pointBeforeCameraTransform;
@@ -45,6 +44,7 @@ namespace Controllers.ARScene
         private Dictionary<ModelView.ModelType, ModelView> _models;
 
         private bool _isZooming;
+        private bool _canZoom;
         private bool _isShowOrbits;
 
         public void Init()
@@ -161,6 +161,7 @@ namespace Controllers.ARScene
             _zoomOut.AddListenerOnPointerUp(ZoomOutEnd);
             _backButton.onClick.AddListener(ContinueMoving);
             _showHideOrbitsButton.onClick.AddListener(ShowHideOrbits);
+            AddZoomingListeners(_galileoSatellites);
         }
 
         private void OnDisable()
@@ -169,6 +170,21 @@ namespace Controllers.ARScene
             _zoomIn.RemoveAllListeners();
             _zoomOut.RemoveAllListeners();
             _backButton.onClick.RemoveListener(ContinueMoving);
+        }
+
+        /// <summary>
+        /// Adds the zooming listeners.
+        /// </summary>
+        /// <param name="satellites">Satellites.</param>
+        private void AddZoomingListeners(List<SatelliteControl> satellites)
+        {
+            for (int i = 0; i < satellites.Count; i++)
+            {
+                _zoomIn.AddListenerOnPointerDown(satellites[i].ZoomInBegin);
+                _zoomIn.AddListenerOnPointerUp(satellites[i].ZoomInEnd);
+                _zoomOut.AddListenerOnPointerDown(satellites[i].ZoomOutBegin);
+                _zoomOut.AddListenerOnPointerUp(satellites[i].ZoomOutEnd);
+            }
         }
 
         /// <summary>
@@ -181,6 +197,7 @@ namespace Controllers.ARScene
             {
                 satellites[i].Init(StopRotations, _pointBeforeCameraTransform);
             }
+            DennyClick(satellites);
         }
 
         /// <summary>
@@ -188,6 +205,7 @@ namespace Controllers.ARScene
         /// </summary>
         private void RotateAllElements()
         {
+            _canZoom = true;
             _buttonCanvasGroup.SetActive(false);
             _rotateEarthControl.Enable();
             _rotateEarthControl.StartRotation();
@@ -197,8 +215,8 @@ namespace Controllers.ARScene
             ShowAndRotate(_glonassSatellites, true);
             ShowAndRotate(_beidouSatellites, true);
             _showHideOrbitsButton.gameObject.SetActive(true);
-            _zoomIn.gameObject.SetActive(true);
-            _zoomOut.gameObject.SetActive(true);
+            //_zoomIn.gameObject.SetActive(true);
+            //_zoomOut.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -221,11 +239,25 @@ namespace Controllers.ARScene
         }
 
         /// <summary>
+        /// Denies the click.
+        /// </summary>
+        /// <param name="satellites">Satellites.</param>
+        /// <param name="isDeny">If set to <c>true</c> is deny.</param>
+        private void DennyClick(List<SatelliteControl> satellites, bool isDeny = true)
+        {
+            for (int i = 0; i < satellites.Count; i++)
+            {
+                satellites[i].DennyClick(isDeny);
+            }
+        }
+
+        /// <summary>
         /// Stops the rotations.
         /// </summary>
         /// <param name="info">Info about satellite.</param>
         private void StopRotations(SatelliteInformationSO info)
         {
+            _canZoom = false;
             _rotateEarthControl.EndRotation();
             _rotateEarthControl.Disable();
             _buttonCanvasGroup.SetActive(true);
@@ -235,8 +267,8 @@ namespace Controllers.ARScene
             _informationControl.transform.eulerAngles = Vector3.zero;
             _informationControl.Show(info);
             _showHideOrbitsButton.gameObject.SetActive(false);
-            _zoomIn.gameObject.SetActive(false);
-            _zoomOut.gameObject.SetActive(false);
+            //_zoomIn.gameObject.SetActive(false);
+            //_zoomOut.gameObject.SetActive(false);
             ShowAndRotate(_galileoSatellites, false);
             ShowAndRotate(_gpsSatellites, false);
             ShowAndRotate(_glonassSatellites, false);
@@ -288,6 +320,12 @@ namespace Controllers.ARScene
             _showHideOrbitsButton.gameObject.SetActive(true);
             _zoomIn.gameObject.SetActive(true);
             _zoomOut.gameObject.SetActive(true);
+
+            DennyClick(_galileoSatellites, false);
+            DennyClick(_gpsSatellites, false);
+            DennyClick(_glonassSatellites, false);
+            DennyClick(_beidouSatellites, false);
+
         }
         #endregion
 
@@ -298,6 +336,7 @@ namespace Controllers.ARScene
         /// </summary>
         private void ZoomInBegin()
         {
+            if (!_canZoom) return;
             _isZooming = true;
             StartCoroutine(Zooming(true));
         }
@@ -315,6 +354,7 @@ namespace Controllers.ARScene
         /// </summary>
         private void ZoomOutBegin()
         {
+            if (!_canZoom) return;
             _isZooming = true;
             StartCoroutine(Zooming(false));
         }
@@ -339,7 +379,7 @@ namespace Controllers.ARScene
             float timer = 0;
             while (_isZooming)
             {
-                _rotateEarthControl.transform.localScale = Vector3.Lerp(startScale, endScale, timer);
+                _rotateEarthControl.transform.localScale = Vector3.MoveTowards(startScale, endScale, timer);
                 timer += Time.deltaTime * _zoomingSpeed;
                 yield return null;
             }
