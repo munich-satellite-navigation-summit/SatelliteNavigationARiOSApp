@@ -25,7 +25,7 @@ namespace Controllers
         private Action<SatelliteInformationSO> _moveToCamAction;
         private Action _moveBackAction;
         private SatelliteInformationSO _informationSO;
-
+        private Vector3 _satelliteScale;
         private Vector3 _zoomMax;
         private Vector3 _zoomMin;
         private Vector3 _satellitePositionBeforeMoving;
@@ -106,6 +106,7 @@ namespace Controllers
 
         public void DennyClick(bool isDenny)
         {
+            Debug.Log("Denny " + name);
             for (int i = 0; i < _clickHandlers.Count; i++)
                 _clickHandlers[i].DennyClick(isDenny);
         }
@@ -161,6 +162,7 @@ namespace Controllers
             Debug.Log("MOVE " + _satelliteClickHandler.IsEnabled);
             Vector3 endPosition = _pointPositionBeforeCamera.position;
             Vector3 rotation = _satelliteClickHandler.transform.eulerAngles;
+            _satelliteScale = _satelliteClickHandler.transform.localScale;
             float timer = 0;
             while (timer < 1f)
             {
@@ -189,17 +191,23 @@ namespace Controllers
             _isCanRotate = false;
             float timer = 0;
             Vector3 startPosition = _satelliteClickHandler.transform.position;
+            Vector3 currentScale = _satelliteClickHandler.transform.localScale;
             while (timer < 1f)
             {
                 _satelliteClickHandler.transform.position = Vector3.Lerp(startPosition, _satellitePositionBeforeMoving, timer);
+                _satelliteClickHandler.transform.localScale = Vector3.Lerp(currentScale, _satelliteScale, timer);
                 timer += Time.deltaTime * _satelliteMoveToCameraSpeed;
                 yield return null;
             }
+
+            _satelliteClickHandler.transform.localScale = _satelliteScale;
             _satelliteClickHandler.transform.position = _satellitePositionBeforeMoving;
             _isMovedToCam = false;
             _satelliteClickHandler.DennyClick();
+
             if (_moveBackAction != null)
                 _moveBackAction();
+
             _isSelfRotation = false;
         }
         #endregion

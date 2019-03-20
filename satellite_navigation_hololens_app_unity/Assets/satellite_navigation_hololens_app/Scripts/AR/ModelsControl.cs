@@ -270,7 +270,7 @@ namespace Controllers.ARScene
         /// </summary>
         /// <param name="satellites">Satellites.</param>
         /// <param name="isDeny">If set to <c>true</c> is deny.</param>
-        private void DennyClick(List<SatelliteControl> satellites, bool isDeny = true)
+        private void DennyClick(List<SatelliteControl> satellites, bool isDeny = false)
         {
             for (int i = 0; i < satellites.Count; i++)
             {

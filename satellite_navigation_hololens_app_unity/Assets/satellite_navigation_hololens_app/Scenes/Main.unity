@@ -494,7 +494,6 @@ GameObject:
   m_Component:
   - component: {fileID: 514885894}
   - component: {fileID: 514885893}
-  - component: {fileID: 514885895}
   m_Layer: 0
   m_Name: AR Session
   m_TagString: Untagged
@@ -529,19 +528,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &514885895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 514885892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0db49d70a5d36432fb788793579e5d22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TargetFrameRate: 60
 --- !u!1 &537888175
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,7 +652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_FocusMode: 1
-  m_LightEstimation: 1
+  m_LightEstimation: 0
 --- !u!1 &684582144
 GameObject:
   m_ObjectHideFlags: 0
@@ -1680,10 +1666,10 @@ RectTransform:
   m_Father: {fileID: 1356960649}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.51000005, y: 0}
-  m_AnchorMax: {x: 0.6546418, y: 0.08444445}
-  m_AnchoredPosition: {x: -0.5, y: 0}
-  m_SizeDelta: {x: -1, y: 0}
+  m_AnchorMin: {x: 0.164, y: 0}
+  m_AnchorMax: {x: 0.31046262, y: 0.08533352}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1872929392
 MonoBehaviour:
@@ -2135,8 +2121,8 @@ RectTransform:
   m_Father: {fileID: 1356960649}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.34541047, y: 0}
-  m_AnchorMax: {x: 0.49017915, y: 0.08444445}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.14482085, y: 0.08533352}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
