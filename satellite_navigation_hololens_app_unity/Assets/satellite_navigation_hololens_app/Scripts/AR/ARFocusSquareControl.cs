@@ -79,7 +79,6 @@ namespace Controllers.ARScene
             var center = new Vector3(Screen.width / 2, Screen.height / 2, _findingSquareDist);
             //var screenPosition = Camera.main.ScreenToWorldPoint(center);
 
-
             if (HitTestWithResultType(TrackableType.FeaturePoint))
             {
                 return;
@@ -123,12 +122,18 @@ namespace Controllers.ARScene
 
         private bool HitTestWithResultType(TrackableType resultTypes)
         {
+
             var center = new Vector3(Screen.width / 2, Screen.height / 2, _findingSquareDist);
             if (m_SessionOrigin.Raycast(center, s_Hits, resultTypes))
             {
                 Debug.Log("HitTestWithResultType  " + s_Hits.Count);
                 Pose hitPose = s_Hits[0].pose;
                 SquareState = FocusState.Found;
+                //var hitPose = s_Hits[0].pose;
+
+                // This does not move the content; instead, it moves and orients the ARSessionOrigin
+                // such that the content appears to be at the raycast hit position.
+
                 if (FoundPlace != null)
                 {
                     FoundPlace.Invoke(hitPose.position, hitPose.rotation);

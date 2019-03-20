@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Controllers;
+using Controllers.ARScene;
 using Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ public class TestSceneControl : MonoBehaviour
     [SerializeField] private float _pauseTimeBeforeShowAllSatellites = 2f;
 
     private CanvasGroup _buttonCanvasGroup;
+    [SerializeField] private ModelsControl _modelsControl;
 
     //[SerializeField] private SatelliteControl _sateliteGPS;
 
@@ -28,11 +30,13 @@ public class TestSceneControl : MonoBehaviour
     {
         _buttonCanvasGroup = _backButton.GetComponent<CanvasGroup>();
 
-        InitSatellites(_galileoSatellites);
-        InitSatellites(_gpsSatellites);
-        InitSatellites(_glonassSatellites);
-        InitSatellites(_beidouSatellites);
-        StartCoroutine(ShowAfterPlace());
+        //InitSatellites(_galileoSatellites);
+        //InitSatellites(_gpsSatellites);
+        //InitSatellites(_glonassSatellites);
+        //InitSatellites(_beidouSatellites);
+        //StartCoroutine(ShowAfterPlace());
+        _modelsControl.Init();
+        _modelsControl.TestShow();
     }
 
 

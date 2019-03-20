@@ -121,7 +121,10 @@ public class LinePointer : MonoBehaviourWrapper
                 outPts.Add(next);
             }
             if (Vector3.Distance(next, dest) < 0.15f)
+            {
+                outPts.Add(dest);
                 break;
+            }
             last = next;
         }
 
@@ -295,7 +298,7 @@ public class LinePointer : MonoBehaviourWrapper
             ParabolaPoints,
             out normal, _destination.position);
 
-        SelectedPoint = ParabolaPoints[ParabolaPoints.Count - 1];
+        //SelectedPoint = ParabolaPoints[ParabolaPoints.Count - 1];
 
         //// 2. Render Parabola graphics
         //if (SelectionPadObject != null)

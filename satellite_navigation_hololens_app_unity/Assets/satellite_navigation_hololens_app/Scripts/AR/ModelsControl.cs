@@ -6,6 +6,7 @@ using Buttons;
 using Helpers;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 using Views;
 
 namespace Controllers.ARScene
@@ -14,7 +15,6 @@ namespace Controllers.ARScene
     {
         [SerializeField] private List<ModelView> _modelList;
         [SerializeField] private RotateEarthControl _rotateEarthControl;
-
 
         [SerializeField] private Transform _pointBeforeCameraTransform;
         [SerializeField] private Button _backButton;
@@ -44,7 +44,6 @@ namespace Controllers.ARScene
         [SerializeField] private Button _weiterStepButton;
         [SerializeField] private Button _zuruckStepButton;
 
-
         private CanvasGroup _buttonCanvasGroup;
         private Dictionary<ModelView.ModelType, ModelView> _models;
         private List<List<SatelliteControl>> _scenariosObjects = new List<List<SatelliteControl>>();
@@ -54,7 +53,6 @@ namespace Controllers.ARScene
         private bool _isShowOrbits;
 
         private int _scenariosIndex;
-
 
         public void Init()
         {
@@ -79,12 +77,18 @@ namespace Controllers.ARScene
             _scenariosObjects.Add(_beidouSatellites);
         }
 
+        public void TestShow()
+        {
+            StartCoroutine(ShowAfterPlace());
+        }
         #region Show
 
         public void Show(ModelView.ModelType type, Vector3 position, Quaternion rotation)
         {
             try
             {
+                Debug.Log("Show " + type);
+
                 Move(type, position);
                 Rotate(type, rotation);
                 _models[type].Show();
@@ -165,9 +169,11 @@ namespace Controllers.ARScene
             return _models[type].Rotation;
         }
 
+        public GameObject GetModel(ModelView.ModelType type)
+        {
+            return _models[type].gameObject;
+        }
         #endregion
-
-
 
         #region Models Controll actions
         private void OnEnable()
@@ -334,8 +340,9 @@ namespace Controllers.ARScene
             _rotateEarthControl.StartRotation();
 
             //ShowAndRotate(_galileoSatellites, true);
-            yield return new WaitForSeconds(_pauseTimeBeforeShowAllSatellites);
+            yield return null; /// new WaitForSeconds(_pauseTimeBeforeShowAllSatellites);
             _weiterStepButton.gameObject.SetActive(true);
+            _canZoom = true;
             //_zuruckStepButton.gameObject.SetActive(true);
             _zoomIn.gameObject.SetActive(true);
             _zoomOut.gameObject.SetActive(true);
@@ -351,7 +358,7 @@ namespace Controllers.ARScene
             //_zoomIn.gameObject.SetActive(isShow);
             //_zoomOut.gameObject.SetActive(isShow);
 
-            _canZoom = isShow;
+            //_canZoom = isShow;
         }
 
         /// <summary>

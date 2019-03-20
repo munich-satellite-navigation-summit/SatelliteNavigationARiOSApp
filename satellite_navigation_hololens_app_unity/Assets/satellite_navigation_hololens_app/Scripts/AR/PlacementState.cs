@@ -43,7 +43,6 @@ namespace Controllers.ARScene
                 _modelsController.Move(ModelView.ModelType.Square, position);
                 //TODO uncomment if not work
                 _modelsController.Rotate(ModelView.ModelType.Square, rotation);
-
                 //Debug.Log (" _placeDetectedMenuControl.AddOnClickSetPointListener ");
                 //_ARFocusSquareControl.StopTracking ( );
                 //_modelsController.Hide ( );
