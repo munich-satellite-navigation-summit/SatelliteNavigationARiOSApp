@@ -2266,16 +2266,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: earth lp Variant
       objectReference: {fileID: 0}
-    - target: {fileID: 605147705961646141, guid: 9879f68913fc041bea496aab365f8dfa,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1636988259075588326, guid: 9879f68913fc041bea496aab365f8dfa,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 197.4925
-      objectReference: {fileID: 0}
     - target: {fileID: 1636988259075588320, guid: 9879f68913fc041bea496aab365f8dfa,
         type: 3}
       propertyPath: m_LocalPosition.x

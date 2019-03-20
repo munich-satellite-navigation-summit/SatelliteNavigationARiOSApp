@@ -39,7 +39,7 @@ public class SatelliteClickHandler : MonoBehaviourWrapper, IClickHandler
     /// <summary>
     /// Set boolean to false for start click again.
     /// </summary>
-    public void DenyClick(bool isDeny = false)
+    public void DennyClick(bool isDeny = false)
     {
         _isClicked = isDeny;
     }

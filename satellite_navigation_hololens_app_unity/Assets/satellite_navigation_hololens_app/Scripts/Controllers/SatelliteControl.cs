@@ -107,7 +107,7 @@ namespace Controllers
         public void DennyClick(bool isDenny)
         {
             for (int i = 0; i < _clickHandlers.Count; i++)
-                _clickHandlers[i].DenyClick(isDenny);
+                _clickHandlers[i].DennyClick(isDenny);
         }
 
         private void Awake()
@@ -197,7 +197,7 @@ namespace Controllers
             }
             _satelliteClickHandler.transform.position = _satellitePositionBeforeMoving;
             _isMovedToCam = false;
-            _satelliteClickHandler.DenyClick();
+            _satelliteClickHandler.DennyClick();
             if (_moveBackAction != null)
                 _moveBackAction();
             _isSelfRotation = false;

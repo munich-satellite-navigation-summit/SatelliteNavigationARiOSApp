@@ -14,6 +14,6 @@ public class RestartApp : MonoBehaviourWrapper, IPointerClickHandler
 {
     public void OnPointerClick(PointerEventData eventData)
     {
-        SceneManager.LoadSceneAsync(Scenes.SplashScreen.ToString());
+        SceneManager.LoadSceneAsync(Scenes.Main.ToString());
     }
 }
