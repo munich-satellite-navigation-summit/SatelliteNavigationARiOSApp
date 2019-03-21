@@ -48,5 +48,5 @@ MonoBehaviour:
   Acceleration: {x: -0, y: 0, z: -0}
   PointCount: 10
   PointSpacing: 0.1
-  GraphicThickness: 0.02
+  GraphicThickness: 0.01
   GraphicMaterial: {fileID: 2100000, guid: 21a645b07758b4b478bff4374fdb9a43, type: 2}

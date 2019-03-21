@@ -34,6 +34,13 @@ namespace Controllers.ARScene
         [SerializeField] private Vector3 _zoomMin = new Vector3(0.5f, 0.5f, 0.5f);
         [SerializeField] private float _zoomingSpeed = 0.5f;
 
+        [Header("Move UP&DOWN ")]
+        [SerializeField] private ButtonHandler _upMoveButton;
+        [SerializeField] private ButtonHandler _downMoveButton;
+        [SerializeField] private Vector3 _upMax = new Vector3(0f, 2f, 0f);
+        [SerializeField] private Vector3 _downMin = new Vector3(0f, 0f, 0f);
+        [SerializeField] private float _movingSpeed = 0.5f;
+
         [Header("Show orbits")]
         [SerializeField] private Button _showHideOrbitsButton;
         [SerializeField] private Text _showHideOrbitsText;
@@ -41,14 +48,17 @@ namespace Controllers.ARScene
         [SerializeField] private string _hideText = "Hide";
 
         [Header("Scenarios Button")]
-        [SerializeField] private Button _weiterStepButton;
-        [SerializeField] private Button _zuruckStepButton;
+        [SerializeField] private Button _nextStepButton;
+        [SerializeField] private Button _backStepButton;
+
+
 
         private CanvasGroup _buttonCanvasGroup;
         private Dictionary<ModelView.ModelType, ModelView> _models;
         private List<List<SatelliteControl>> _scenariosObjects = new List<List<SatelliteControl>>();
 
         private bool _isZooming;
+        private bool _isMoving;
         private bool _canZoom;
         private bool _isShowOrbits;
 
@@ -67,8 +77,8 @@ namespace Controllers.ARScene
             _zoomIn.gameObject.SetActive(false);
             _zoomOut.gameObject.SetActive(false);
             Hide();
-            _weiterStepButton.gameObject.SetActive(false);
-            _zuruckStepButton.gameObject.SetActive(false);
+            _nextStepButton.gameObject.SetActive(false);
+            _backStepButton.gameObject.SetActive(false);
             _isShowOrbits = true;
             //Create Scenarios
             _scenariosObjects.Add(_galileoSatellites);
@@ -182,11 +192,15 @@ namespace Controllers.ARScene
             _zoomIn.AddListenerOnPointerUp(ZoomInEnd);
             _zoomOut.AddListenerOnPointerDown(ZoomOutBegin);
             _zoomOut.AddListenerOnPointerUp(ZoomOutEnd);
+            _upMoveButton.AddListenerOnPointerDown(MovingUpBegin);
+            _upMoveButton.AddListenerOnPointerUp(MovingUpEnd);
+            _downMoveButton.AddListenerOnPointerDown(MovingDownBegin);
+            _downMoveButton.AddListenerOnPointerUp(MovingDownEnd);
             _backButton.onClick.AddListener(ContinueMoving);
             _showHideOrbitsButton.onClick.AddListener(ShowHideOrbits);
             AddZoomingListeners(_galileoSatellites);
-            _weiterStepButton.onClick.AddListener(NextState);
-            _zuruckStepButton.onClick.AddListener(PrevState);
+            _nextStepButton.onClick.AddListener(NextState);
+            _backStepButton.onClick.AddListener(PrevState);
         }
 
         private void OnDisable()
@@ -194,9 +208,13 @@ namespace Controllers.ARScene
             _showHideOrbitsButton.onClick.RemoveListener(ShowHideOrbits);
             _zoomIn.RemoveAllListeners();
             _zoomOut.RemoveAllListeners();
+
+            _upMoveButton.RemoveAllListeners();
+            _downMoveButton.RemoveAllListeners();
+
             _backButton.onClick.RemoveListener(ContinueMoving);
-            _weiterStepButton.onClick.RemoveListener(NextState);
-            _zuruckStepButton.onClick.RemoveListener(PrevState);
+            _nextStepButton.onClick.RemoveListener(NextState);
+            _backStepButton.onClick.RemoveListener(PrevState);
         }
 
         /// <summary>
@@ -237,11 +255,17 @@ namespace Controllers.ARScene
             _rotateEarthControl.Enable();
             _rotateEarthControl.StartRotation();
 
-            ShowAndRotate(_galileoSatellites, true);
-            ShowAndRotate(_gpsSatellites, true);
-            ShowAndRotate(_glonassSatellites, true);
-            ShowAndRotate(_beidouSatellites, true);
+            for (int i = 0; i < _scenariosIndex; i++)
+            {
+                ShowAndRotate(_scenariosObjects[i], true);
+            }
+            //ShowAndRotate(_galileoSatellites, true);
+            //ShowAndRotate(_gpsSatellites, true);
+            //ShowAndRotate(_glonassSatellites, true);
+            //ShowAndRotate(_beidouSatellites, true);
             _showHideOrbitsButton.gameObject.SetActive(true);
+            _nextStepButton.gameObject.SetActive(false);
+            _backStepButton.gameObject.SetActive(false);
             //_zoomIn.gameObject.SetActive(true);
             //_zoomOut.gameObject.SetActive(true);
         }
@@ -300,6 +324,8 @@ namespace Controllers.ARScene
             ShowAndRotate(_gpsSatellites, false);
             ShowAndRotate(_glonassSatellites, false);
             ShowAndRotate(_beidouSatellites, false);
+            _nextStepButton.gameObject.SetActive(false);
+            _backStepButton.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -311,10 +337,21 @@ namespace Controllers.ARScene
             //_earth.StartRotation();
             _informationControl.Hide();
             _informationControl.Disable();
-            MoveBack(_galileoSatellites);
-            MoveBack(_gpsSatellites);
-            MoveBack(_glonassSatellites);
-            MoveBack(_beidouSatellites);
+
+            Debug.Log("_scenariosIndex " + _scenariosIndex);
+            for (int i = 0; i < _scenariosIndex; i++)
+            {
+                Debug.Log("index " + i);
+                if (i < _scenariosObjects.Count)
+                {
+                    MoveBack(_scenariosObjects[i]);
+                }
+            }
+
+            //MoveBack(_galileoSatellites);
+            //MoveBack(_gpsSatellites);
+            //MoveBack(_glonassSatellites);
+            //MoveBack(_beidouSatellites);
         }
 
         /// <summary>
@@ -341,7 +378,7 @@ namespace Controllers.ARScene
 
             //ShowAndRotate(_galileoSatellites, true);
             yield return null; /// new WaitForSeconds(_pauseTimeBeforeShowAllSatellites);
-            _weiterStepButton.gameObject.SetActive(true);
+            _nextStepButton.gameObject.SetActive(true);
             _canZoom = true;
             //_zuruckStepButton.gameObject.SetActive(true);
             _zoomIn.gameObject.SetActive(true);
@@ -368,8 +405,8 @@ namespace Controllers.ARScene
         {
             if (_scenariosIndex < _scenariosObjects.Count)
             {
-                if (!_zuruckStepButton.gameObject.activeSelf)
-                    _zuruckStepButton.gameObject.SetActive(true);
+                if (!_backStepButton.gameObject.activeSelf)
+                    _backStepButton.gameObject.SetActive(true);
 
                 if (_scenariosIndex == -1)
                 {
@@ -381,8 +418,8 @@ namespace Controllers.ARScene
                 _scenariosIndex++;
                 if (_scenariosIndex >= _scenariosObjects.Count)
                 {
-                    _weiterStepButton.gameObject.SetActive(false);
-                    _zuruckStepButton.gameObject.SetActive(true);
+                    _nextStepButton.gameObject.SetActive(false);
+                    _backStepButton.gameObject.SetActive(true);
                 }
                 ShowButtons(true);
             }
@@ -400,13 +437,13 @@ namespace Controllers.ARScene
                 {
                     return;
                 }
-                if (!_weiterStepButton.gameObject.activeSelf)
-                    _weiterStepButton.gameObject.SetActive(true);
+                if (!_nextStepButton.gameObject.activeSelf)
+                    _nextStepButton.gameObject.SetActive(true);
 
                 if (_scenariosIndex == 0)
                 {
                     ShowButtons(false);
-                    _zuruckStepButton.gameObject.SetActive(false);
+                    _backStepButton.gameObject.SetActive(false);
                 }
 
                 DennyClick(_scenariosObjects[_scenariosIndex], false);
@@ -473,6 +510,67 @@ namespace Controllers.ARScene
             }
         }
         #endregion
+
+
+        #region Moving Up and Down
+
+        /// <summary>
+        /// Start zooming in.
+        /// </summary>
+        private void MovingDownBegin()
+        {
+            //if (!_canZoom) return;
+            _isMoving = true;
+            StartCoroutine(Moving(false));
+        }
+
+        /// <summary>
+        /// Stop zooming in.
+        /// </summary>
+        private void MovingDownEnd()
+        {
+            _isMoving = false;
+        }
+
+        /// <summary>
+        /// Start zooming out.
+        /// </summary>
+        private void MovingUpBegin()
+        {
+            //if (!_canZoom) return;
+            _isMoving = true;
+            StartCoroutine(Moving(true));
+        }
+
+        /// <summary>
+        /// Stop zooming out.
+        /// </summary>
+        private void MovingUpEnd()
+        {
+            _isMoving = false;
+        }
+
+        /// <summary>
+        /// Zooming the specified isZoomIn.
+        /// </summary>
+        /// <returns>The zooming.</returns>
+        /// <param name="isMoving">If set to <c>true</c> is zoom in else it zooming out.</param>
+        private IEnumerator Moving(bool isMoving)
+        {
+            Vector3 startMove = _rotateEarthControl.transform.position;
+            Vector3 endMove = isMoving ? _upMax : _downMin;
+            endMove.x = startMove.x;
+            endMove.z = startMove.z;
+            float timer = 0;
+            while (_isMoving)
+            {
+                _rotateEarthControl.transform.position = Vector3.MoveTowards(startMove, endMove, timer);
+                timer += Time.deltaTime * _movingSpeed;
+                yield return null;
+            }
+        }
+        #endregion
+
 
         #region Show/Hide Orbits
 
