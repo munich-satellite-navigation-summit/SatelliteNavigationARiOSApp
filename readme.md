@@ -16,8 +16,10 @@ Unless expressly provided otherwise, the Software under this license is made ava
 
 #  Project setup:
 The project was created using Unity 2018.3.6f1
-The HoloLens App: you need open it in Windows 10 and installs tools (read here https://docs.microsoft.com/en-us/windows/mixed-reality/install-the-tools)
-The mobile version: you need mobile requirement (for iOS you need  Mac OS, Xcode, for Android you need install JDK, SDK Manager, Android platforms) and open in Unity 2018.3.6f1 or higher version
+
+- The HoloLens App: you need open it in Windows 10 and installs tools (read here https://docs.microsoft.com/en-us/windows/mixed-reality/install-the-tools)
+
+- The mobile version: you need mobile requirement (for iOS you need  Mac OS, Xcode, for Android you need install JDK, SDK Manager, Android platforms) and open in Unity 2018.3.6f1 or higher version
 
 #  What is different?
 Mobile version and HoloLens version it is two different projects because MR(mixed reality) does not support any files, scripts, even if it not used in the current scene/project.
