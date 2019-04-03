@@ -35,8 +35,6 @@ namespace Controllers.ARScene
 
 		protected void ActiveState<T>() where T : StateControlBase
 		{
-            //TODO 
-			//GetSceneControler<StateMachineSceneControlBase>().ActiveState<T>();
 		}
 	}
 }

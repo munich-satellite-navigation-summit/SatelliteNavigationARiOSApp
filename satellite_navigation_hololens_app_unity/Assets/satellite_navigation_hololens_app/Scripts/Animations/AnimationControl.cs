@@ -270,11 +270,4 @@ public class AnimationControl : MonoBehaviour
     {
         SetTimeScale();
     }
-
-    //void OnApplicationPause(bool pauseStatus)
-    //{
-    //    Debug.Log("OnApplicationPause " + pauseStatus);
-    //}
-
-
 }

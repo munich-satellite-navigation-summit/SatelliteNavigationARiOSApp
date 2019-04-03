@@ -54,7 +54,5 @@ namespace Buttons
                 if (_onPointerUp[i] != null)
                     _onPointerUp[i].Invoke();
         }
-
-
     }
 }

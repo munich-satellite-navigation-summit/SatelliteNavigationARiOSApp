@@ -1,0 +1,9 @@
+iOS:
+  Here is a bug where we put an object on the glow from a lamp object can jump and leave from the place where we put it. This problem in ARKit plugin.
+
+HoloLens:
+  Problem with performance and with a crash on the device:
+We had the problem with performance on the device, satellites and earth moved slowly and when turn on streaming objects in the App created like slide show from images.
+We used MashBaker(free version) for bake mesh on the orbits, satellites, and earth. We bake light and turn off real-time light.
+Rays what goes to the logo on the earth we do like one line and call it in FixedUpdate function.
+Crash on the device it after placing many objects, we try to do some object like one and delete scripts with canvas animation.

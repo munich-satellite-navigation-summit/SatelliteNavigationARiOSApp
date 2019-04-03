@@ -17,9 +17,6 @@ namespace Controllers.ARScene
             Stoped
         }
 
-        //[SerializeField] private GameObject _findingSquare;
-
-        //[SerializeField] private LayerMask _collisionLayerMask;
         [SerializeField] private float _findingSquareDist = 0.5f;
         [SerializeField] private Camera _camera;
 
@@ -41,7 +38,6 @@ namespace Controllers.ARScene
                 {
                     ChangedFocusState(_squareState);
                 }
-                //_findingSquare.SetActive(_squareState != FocusState.Found && _squareState != FocusState.Stoped);
             }
         }
         private FocusState _squareState;
@@ -51,10 +47,8 @@ namespace Controllers.ARScene
         public void Init()
         {
             var layerIndex = LayerMask.NameToLayer("ARGameObject");
-            //_collisionLayerMask = 1 << layerIndex;s
             SquareState = FocusState.Initializing;
             _isTrackingInitialized = true;
-            //Disable();
         }
 
         public void StartTracking()
@@ -72,12 +66,10 @@ namespace Controllers.ARScene
         {
             if (SquareState == FocusState.Stoped)
             {
-                //Debug.Log("SquareState == FocusState.Stoped");
                 return;
             }
             //use center of screen for focusing
             var center = new Vector3(Screen.width / 2, Screen.height / 2, _findingSquareDist);
-            //var screenPosition = Camera.main.ScreenToWorldPoint(center);
 
             if (HitTestWithResultType(TrackableType.FeaturePoint))
             {
@@ -93,31 +85,7 @@ namespace Controllers.ARScene
             if (_isTrackingInitialized)
             {
                 SquareState = FocusState.Finding;
-
-                ////check camera forward is facing downward
-                //if (Vector3.Dot(_camera.transform.forward, Vector3.down) > 0)
-                //{
-                //    //position the focus finding square a distance from camera and facing up
-                //    //_findingSquare.transform.position = _camera.ScreenToWorldPoint(center);
-
-                //    //vector from camera to focussquare
-                //    //var vecToCamera = _findingSquare.transform.position - _camera.transform.position;
-
-                //    //find vector that is orthogonal to camera vector and up vector
-                //    //var vecOrthogonal = Vector3.Cross(vecToCamera, Vector3.up);
-
-                //    //find vector orthogonal to both above and up vector to find the forward vector in basis function
-                //    //var vecForward = Vector3.Cross(vecOrthogonal, Vector3.up);
-
-                //    //_findingSquare.transform.rotation = Quaternion.LookRotation(vecForward, Vector3.up);
-                //}
-                //else
-                //{
-                //    //we will not display finding square if camera is not facing below horizon
-                //    //_findingSquare.SetActive(false);
-                //}
             }
-
         }
 
         private bool HitTestWithResultType(TrackableType resultTypes)
@@ -129,7 +97,6 @@ namespace Controllers.ARScene
                 Debug.Log("HitTestWithResultType  " + s_Hits.Count);
                 Pose hitPose = s_Hits[0].pose;
                 SquareState = FocusState.Found;
-                //var hitPose = s_Hits[0].pose;
 
                 // This does not move the content; instead, it moves and orients the ARSessionOrigin
                 // such that the content appears to be at the raycast hit position.

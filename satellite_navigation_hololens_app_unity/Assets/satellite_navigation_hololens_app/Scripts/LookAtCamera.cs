@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
-
+/// <summary>
+/// Look an object at the main camera.
+/// </summary>
 public class LookAtCamera : MonoBehaviour
 {
     private Transform _cameraTransform;

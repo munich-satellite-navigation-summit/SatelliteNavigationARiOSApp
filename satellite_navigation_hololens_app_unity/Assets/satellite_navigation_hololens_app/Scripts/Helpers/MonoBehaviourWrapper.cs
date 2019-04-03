@@ -24,6 +24,9 @@ namespace Helpers
             get { return gameObject.activeSelf; }
         }
 
+        /// <summary>
+        /// Enable this object.
+        /// </summary>
         public virtual void Enable()
         {
             if (!IsEnabled)
@@ -32,6 +35,9 @@ namespace Helpers
             }
         }
 
+        /// <summary>
+        /// Disable this object.
+        /// </summary>
         public virtual void Disable()
         {
             if (IsEnabled)
