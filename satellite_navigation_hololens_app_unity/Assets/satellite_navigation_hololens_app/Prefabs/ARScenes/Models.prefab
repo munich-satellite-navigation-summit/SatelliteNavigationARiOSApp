@@ -256,7 +256,7 @@ MonoBehaviour:
   _upMoveButton: {fileID: 0}
   _downMoveButton: {fileID: 0}
   _upMax: {x: 0, y: 2, z: 0}
-  _downMin: {x: 0, y: 0, z: 0}
+  _downMin: {x: 0, y: 1, z: 0}
   _movingSpeed: 0.5
   _showHideOrbitsButton: {fileID: 0}
   _showHideOrbitsText: {fileID: 0}
@@ -3157,10 +3157,6 @@ PrefabInstance:
     - target: {fileID: 1021861784, guid: 9879f68913fc041bea496aab365f8dfa, type: 3}
       propertyPath: m_LocalPosition.z
       value: -49
-      objectReference: {fileID: 0}
-    - target: {fileID: 1021861784, guid: 9879f68913fc041bea496aab365f8dfa, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 1131526594519384528, guid: 9879f68913fc041bea496aab365f8dfa,
         type: 3}

@@ -38,7 +38,7 @@ namespace Controllers.ARScene
         [SerializeField] private ButtonHandler _upMoveButton;
         [SerializeField] private ButtonHandler _downMoveButton;
         [SerializeField] private Vector3 _upMax = new Vector3(0f, 2f, 0f);
-        [SerializeField] private Vector3 _downMin = new Vector3(0f, 0f, 0f);
+        [SerializeField] private Vector3 _downMin = new Vector3(0f, 1f, 0f);
         [SerializeField] private float _movingSpeed = 0.5f;
 
         [Header("Show orbits")]
@@ -76,6 +76,10 @@ namespace Controllers.ARScene
             _showHideOrbitsButton.gameObject.SetActive(false);
             _zoomIn.gameObject.SetActive(false);
             _zoomOut.gameObject.SetActive(false);
+
+            _upMoveButton.gameObject.SetActive(false);
+            _downMoveButton.gameObject.SetActive(false);
+
             Hide();
             _nextStepButton.gameObject.SetActive(false);
             _backStepButton.gameObject.SetActive(false);
@@ -111,6 +115,9 @@ namespace Controllers.ARScene
                     _showHideOrbitsButton.gameObject.SetActive(false);
                     _zoomIn.gameObject.SetActive(false);
                     _zoomOut.gameObject.SetActive(false);
+                    _upMoveButton.gameObject.SetActive(false);
+                    _downMoveButton.gameObject.SetActive(false);
+
                     Hide(ModelView.ModelType.Earth);
                 }
             }
@@ -264,8 +271,11 @@ namespace Controllers.ARScene
             //ShowAndRotate(_glonassSatellites, true);
             //ShowAndRotate(_beidouSatellites, true);
             _showHideOrbitsButton.gameObject.SetActive(true);
-            _nextStepButton.gameObject.SetActive(false);
-            _backStepButton.gameObject.SetActive(false);
+            _nextStepButton.gameObject.SetActive(_scenariosIndex < _scenariosObjects.Count);
+            _backStepButton.gameObject.SetActive(true);
+            _upMoveButton.gameObject.SetActive(true);
+            _downMoveButton.gameObject.SetActive(true);
+
             //_zoomIn.gameObject.SetActive(true);
             //_zoomOut.gameObject.SetActive(true);
         }
@@ -320,6 +330,9 @@ namespace Controllers.ARScene
             _showHideOrbitsButton.gameObject.SetActive(false);
             //_zoomIn.gameObject.SetActive(false);
             //_zoomOut.gameObject.SetActive(false);
+            _upMoveButton.gameObject.SetActive(false);
+            _downMoveButton.gameObject.SetActive(false);
+
             ShowAndRotate(_galileoSatellites, false);
             ShowAndRotate(_gpsSatellites, false);
             ShowAndRotate(_glonassSatellites, false);
@@ -338,10 +351,8 @@ namespace Controllers.ARScene
             _informationControl.Hide();
             _informationControl.Disable();
 
-            Debug.Log("_scenariosIndex " + _scenariosIndex);
             for (int i = 0; i < _scenariosIndex; i++)
             {
-                Debug.Log("index " + i);
                 if (i < _scenariosObjects.Count)
                 {
                     MoveBack(_scenariosObjects[i]);
@@ -381,8 +392,12 @@ namespace Controllers.ARScene
             _nextStepButton.gameObject.SetActive(true);
             _canZoom = true;
             //_zuruckStepButton.gameObject.SetActive(true);
+            _upMax += _rotateEarthControl.transform.position;
+            _downMin = _rotateEarthControl.transform.position - _downMin;
             _zoomIn.gameObject.SetActive(true);
             _zoomOut.gameObject.SetActive(true);
+            _upMoveButton.gameObject.SetActive(true);
+            _downMoveButton.gameObject.SetActive(true);
         }
 
         /// <summary>
