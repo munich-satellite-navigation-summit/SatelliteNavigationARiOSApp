@@ -22,5 +22,5 @@ Unless expressly provided otherwise, the Software under this license is made ava
     - HoloLens [Read this](https://docs.microsoft.com/en-us/windows/mixed-reality/install-the-tools)
 
 #  What is different?
-Mobile version and HoloLens version it is two different projects because MR(mixed reality) does not support any files, scripts, even if it not used in the current scene/project.
-But in this versions, we use same scripts for rotations Earth, satellites, a movement to the camera, steps of showing satellites, all that does not depend on the technology AR/MR
+Mobile version project and HoloLens project are two different projects because MR (Mixed Reality) does not support any files, scripts, even if they are not used in the current scene/project.
+We use the same scripts to rotating the Earth, satellites, camera movement, steps of showing satellites, everything that does not depend on AR / MR technology
