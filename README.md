@@ -29,7 +29,7 @@ Unless expressly provided otherwise, the Software under this license is made ava
 Mobile project-version (the iPad one) and HoloLens project are two different Unity-projects because MR (Mixed Reality from Hololens) does not support any third-party files and scripts, but only native. This counts even if scripts are only stored in the project and not used in the current scene.  
 The scripts for Earth-rotating, satellites, camera movement, steps of satellites-displaying are common for both projects and do not rely on AR / MR technology
 
-#  Troubleshootings
+#  Troubleshootings (solved)
 
 ## Development
 
@@ -39,11 +39,11 @@ Solution: create two different Unity-projects for Hololens and mobile-version (i
 Issue: Hololens-app can’t installed on the device  
 Solution: it is necessary to remember: the version of Hololens-firmware core and Visual Studio version core need to be compatible, so developer has to up- or downgrade the Visual Studio version on the build-computer 
 
-## iOS:
+## iOS
 Issue: the Earth is not staying at the set place and is moving with iPad-movements  
 Solution: that’s ARKit problem with glance surfaces, so another surface has to be used or user has to move around the chosen point to reach better ARKit Tracking
 
-## HoloLens:
+## HoloLens
 Issue: very bad performance, slow movements, freezing  
 Solution: optimizations of every app-element
 - satellite-models have to be low-poly
