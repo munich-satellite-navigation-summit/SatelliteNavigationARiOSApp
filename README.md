@@ -59,3 +59,7 @@ Solution: make it low-poly or use other schematic 3D models
 
 Issue: 3-5 seconds image-delay while streaming from Hololens to "Device portal" site - too big latency times for live-presentations  
 Solution: stream via „Hololens App“ from MS Store - the delay is smaller (0,5-1 sec)
+
+
+#  Development
+Developed for [Bundeswehr University Munich](https://www.unibw.de/home-en) for Augmented Reality (AR) Demonstration during [Munich Satellite Navigation Summit](https://www.munich-satellite-navigation-summit.org/) by [App-Agentur](https://www.app-agentur.com/) of [Lindenvalley GmbH](https://www.lindenvalley.de/)
