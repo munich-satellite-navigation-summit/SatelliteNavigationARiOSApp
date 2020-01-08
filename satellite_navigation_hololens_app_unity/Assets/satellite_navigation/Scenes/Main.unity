@@ -3474,11 +3474,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 9088757223691087678, guid: d756103de1e964ec0b6cea955a3624fa,
-        type: 3}
-      propertyPath: _clickHandlers.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3983987772808731163, guid: d756103de1e964ec0b6cea955a3624fa,
         type: 3}
       propertyPath: m_Name
@@ -3544,6 +3539,11 @@ PrefabInstance:
       propertyPath: _nextStepButton
       value: 
       objectReference: {fileID: 1872929393}
+    - target: {fileID: 9088757223691087678, guid: d756103de1e964ec0b6cea955a3624fa,
+        type: 3}
+      propertyPath: _clickHandlers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3983987772808731161, guid: d756103de1e964ec0b6cea955a3624fa,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4195,6 +4195,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8837682667348653204, guid: d756103de1e964ec0b6cea955a3624fa,
         type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: d756103de1e964ec0b6cea955a3624fa, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
